@@ -24,8 +24,6 @@ int main() {
     } else {
       printf("%s: command not found\n", input);
     }
-
-    printf("%s: command not found\n", input);
   }
 
   return 0;
