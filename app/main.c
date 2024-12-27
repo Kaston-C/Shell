@@ -22,11 +22,11 @@ int main() {
         printf("%s\n", input + 5);
     } else if (strncmp(input, "type ", 5) == 0) {
         if (strncmp(input + 5, "exit", 4) == 0) {
-            printf("exit is a shell builtin");
+            printf("exit is a shell builtin\n");
         } else if (strncmp(input + 5, "echo", 4) == 0) {
-            printf("echo is a shell builtin");
+            printf("echo is a shell builtin\n");
         } else if (strncmp(input + 5, "type", 4) == 0) {
-            printf("type is a shell builtin");
+            printf("type is a shell builtin\n");
         } else {
             printf("%s: not found\n", input + 5);
         }
