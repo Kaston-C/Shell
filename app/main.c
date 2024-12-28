@@ -37,13 +37,14 @@ int main() {
         } else {
             char *command = input + 5;
             char *path = getenv("PATH"); // Get the PATH environment variable
+            char *pathdup = strndup(path, strlen(path));
 
             if (path == NULL) {
                 printf("%s: not found\n", command);
                 continue;
             }
 
-            char *dir = strtok(path, ":"); // Split PATH into directories
+            char *dir = strtok(pathdup, ":"); // Split PATH into directories
             int found = 0;
 
             while (dir != NULL) {
