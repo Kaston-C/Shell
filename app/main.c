@@ -68,7 +68,15 @@ int main() {
     // Handle echo command
     } else if (strncmp(input, "echo ", 5) == 0) {
         printf("%s\n", input + 5);
-    // Handle the type command
+    // Handle pwd command
+    } else if (strncmp(input, "pwd", 3) == 0) {
+        char cwd[1024];
+        if (getcwd(cwd, sizeof(cwd)) != NULL) {
+            printf("%s\n", cwd);
+        } else {
+            perror("getcwd failed");
+        }
+    // Handle type command
     } else if (strncmp(input, "type ", 5) == 0) {
         if (strncmp(input + 5, "exit", 4) == 0) {
             printf("exit is a shell builtin\n");
@@ -110,7 +118,7 @@ int main() {
 
             free(pathdup); // Free the duplicated path string
         }
-    // Handle unrecognized commands
+    // Execute unrecognized commands
     } else {
         execute_external_command(input);
     }
