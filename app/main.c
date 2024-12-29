@@ -78,7 +78,7 @@ int main() {
         }
     // Handle cd command
     } else if (strncmp(input, "cd", 2) == 0) {
-        if (strncmp(input + 2, "", 1) == 0) {
+        if (strncmp(input + 2, "", 1) == 0 || strncmp(input + 3, "~", 1) == 0) {
             chdir(getenv("HOME"));
         } else if (chdir(input + 3) != 0) {
             printf("cd:%s: No such file or directory\n", input + 2);
