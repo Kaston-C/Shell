@@ -84,6 +84,8 @@ int main() {
             printf("echo is a shell builtin\n");
         } else if (strncmp(input + 5, "type", 4) == 0) {
             printf("type is a shell builtin\n");
+        } else if (strncmp(input + 5, "pwd", 3) == 0) {
+            printf("pwd is a shell builtin\n");
         } else {
             char *command = input + 5;
             char *path = getenv("PATH"); // Get the PATH environment variable
