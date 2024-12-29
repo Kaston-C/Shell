@@ -76,6 +76,13 @@ int main() {
         } else {
             perror("getcwd failed");
         }
+    // Handle cd command
+    } else if (strncmp(input, "cd", 2) == 0) {
+        if (chdir(input + 3) != 0) {
+            printf("cd:%s: No such file or directory\n", input + 2);
+        } else {
+            continue;
+        }
     // Handle type command
     } else if (strncmp(input, "type ", 5) == 0) {
         if (strncmp(input + 5, "exit", 4) == 0) {
