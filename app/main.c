@@ -2,9 +2,47 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/wait.h>
 
 #define MAX_INPUT 100
 #define MAX_PATH 1024
+
+void execute_external_command(char *input) {
+    // Tokenize the input into command and arguments
+    char *args[MAX_INPUT];
+    char *token = strtok(input, " ");
+    int arg_count = 0;
+
+    while (token != NULL && arg_count < MAX_INPUT - 1) {
+        args[arg_count++] = token;
+        token = strtok(NULL, " ");
+    }
+    args[arg_count] = NULL; // Null-terminate the argument list
+
+    if (arg_count == 0) {
+        return; // No command entered
+    }
+
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        // Fork failed
+        perror("fork");
+        exit(EXIT_FAILURE);
+    } else if (pid == 0) {
+        // Child process: execute the command
+        execvp(args[0], args);
+
+        // If execvp returns, an error occurred
+        fprintf(stderr, "%s: command not found\n", args[0]);
+        exit(EXIT_FAILURE);
+    } else {
+        // Parent process: wait for the child to complete
+        int status;
+        waitpid(pid, &status, 0);
+    }
+}
+
 
 int main() {
   // REPL loop
@@ -16,7 +54,11 @@ int main() {
 
     // Wait for user input
     char input[MAX_INPUT];
-    fgets(input, MAX_INPUT, stdin);
+    if (fgets(input, MAX_INPUT, stdin) == NULL) {
+        // Handle end-of-file (Ctrl+D)
+        printf("\n");
+        break;
+    }
     // Set newline to null terminator
     input[strlen(input) - 1] = '\0';
 
@@ -65,12 +107,13 @@ int main() {
             if (!found) {
                 printf("%s: not found\n", command);
             }
+
+            free(pathdup); // Free the duplicated path string
         }
     // Handle unrecognized commands
     } else {
-        printf("%s: command not found\n", input);
+        execute_external_command(input);
     }
   }
-
   return 0;
 }
