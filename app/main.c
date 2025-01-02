@@ -7,6 +7,32 @@
 #define MAX_INPUT 100
 #define MAX_PATH 1024
 
+void process_input(char *input) {
+    int len = strlen(input);
+    char temp[MAX_INPUT];
+    int j = 0;
+    int inside_single_quote = 0;
+
+    for (int i = 0; i < len; i++) {
+        if (input[i] == '\'' && !inside_single_quote) {
+            // Start of single quote block
+            inside_single_quote = 1;
+        } else if (input[i] == '\'' && inside_single_quote) {
+            // End of single quote block
+            inside_single_quote = 0;
+        } else {
+            if (inside_single_quote || input[i] != ' ' || (i == 0 || input[i-1] != ' ')) {
+                // Preserve content inside single quotes or non-space characters outside
+                temp[j++] = input[i];
+            }
+        }
+    }
+    temp[j] = '\0';
+
+    // Copy the processed input back
+    strcpy(input, temp);
+}
+
 void execute_external_command(char *input) {
     // Tokenize the input into command and arguments
     char *args[MAX_INPUT];
@@ -45,94 +71,96 @@ void execute_external_command(char *input) {
 
 
 int main() {
-  // REPL loop
-  while (1) {
-    // Flush after every printf
-    setbuf(stdout, NULL);
+    // REPL loop
+    while (1) {
+        // Flush after every printf
+        setbuf(stdout, NULL);
 
-    printf("$ ");
+        printf("$ ");
 
-    // Wait for user input
-    char input[MAX_INPUT];
-    if (fgets(input, MAX_INPUT, stdin) == NULL) {
-        // Handle end-of-file (Ctrl+D)
-        printf("\n");
-        break;
-    }
-    // Set newline to null terminator
-    input[strlen(input) - 1] = '\0';
-
-    // Handle exit command
-    if (strncmp(input, "exit 0", 6) == 0) {
-        exit(0);
-    // Handle echo command
-    } else if (strncmp(input, "echo ", 5) == 0) {
-        printf("%s\n", input + 5);
-    // Handle pwd command
-    } else if (strncmp(input, "pwd", 3) == 0) {
-        char cwd[1024];
-        if (getcwd(cwd, sizeof(cwd)) != NULL) {
-            printf("%s\n", cwd);
-        } else {
-            perror("getcwd failed");
+        // Wait for user input
+        char input[MAX_INPUT];
+        if (fgets(input, MAX_INPUT, stdin) == NULL) {
+            // Handle end-of-file (Ctrl+D)
+            printf("\n");
+            break;
         }
-    // Handle cd command
-    } else if (strncmp(input, "cd", 2) == 0) {
-        if (strncmp(input + 2, "", 1) == 0 || strncmp(input + 3, "~", 1) == 0) {
-            chdir(getenv("HOME"));
-        } else if (chdir(input + 3) != 0) {
-            printf("cd:%s: No such file or directory\n", input + 2);
-        } else {
-            continue;
-        }
-    // Handle type command
-    } else if (strncmp(input, "type ", 5) == 0) {
-        if (strncmp(input + 5, "exit", 4) == 0) {
-            printf("exit is a shell builtin\n");
-        } else if (strncmp(input + 5, "echo", 4) == 0) {
-            printf("echo is a shell builtin\n");
-        } else if (strncmp(input + 5, "type", 4) == 0) {
-            printf("type is a shell builtin\n");
-        } else if (strncmp(input + 5, "pwd", 3) == 0) {
-            printf("pwd is a shell builtin\n");
-        } else {
-            char *command = input + 5;
-            char *path = getenv("PATH"); // Get the PATH environment variable
-            char *pathdup = strndup(path, strlen(path));
+        // Set newline to null terminator
+        input[strlen(input) - 1] = '\0';
 
-            if (path == NULL) {
-                printf("%s: not found\n", command);
+        process_input(input);
+
+        // Handle exit command
+        if (strncmp(input, "exit 0", 6) == 0) {
+            exit(0);
+        // Handle echo command
+        } else if (strncmp(input, "echo ", 5) == 0) {
+            printf("%s\n", input + 5);
+        // Handle pwd command
+        } else if (strncmp(input, "pwd", 3) == 0) {
+            char cwd[1024];
+            if (getcwd(cwd, sizeof(cwd)) != NULL) {
+                printf("%s\n", cwd);
+            } else {
+                perror("getcwd failed");
+            }
+        // Handle cd command
+        } else if (strncmp(input, "cd", 2) == 0) {
+            if (strncmp(input + 2, "", 1) == 0 || strncmp(input + 3, "~", 1) == 0) {
+                chdir(getenv("HOME"));
+            } else if (chdir(input + 3) != 0) {
+                printf("cd:%s: No such file or directory\n", input + 2);
+            } else {
                 continue;
             }
+        // Handle type command
+        } else if (strncmp(input, "type ", 5) == 0) {
+            if (strncmp(input + 5, "exit", 4) == 0) {
+                printf("exit is a shell builtin\n");
+            } else if (strncmp(input + 5, "echo", 4) == 0) {
+                printf("echo is a shell builtin\n");
+            } else if (strncmp(input + 5, "type", 4) == 0) {
+                printf("type is a shell builtin\n");
+            } else if (strncmp(input + 5, "pwd", 3) == 0) {
+                printf("pwd is a shell builtin\n");
+            } else {
+                char *command = input + 5;
+                char *path = getenv("PATH"); // Get the PATH environment variable
+                char *pathdup = strndup(path, strlen(path));
 
-            char *dir = strtok(pathdup, ":"); // Split PATH into directories
-            int found = 0;
-
-            while (dir != NULL) {
-                // Construct the full path to the command
-                char full_path[MAX_PATH];
-                snprintf(full_path, sizeof(full_path), "%s/%s", dir, command);
-
-                // Check if the file exists and is executable
-                if (access(full_path, X_OK) == 0) {
-                    printf("%s is %s\n", command, full_path);
-                    found = 1;
-                    break; // Exit the loop after the first match
+                if (path == NULL) {
+                    printf("%s: not found\n", command);
+                    continue;
                 }
 
-                dir = strtok(NULL, ":"); // Move to the next directory in PATH
-            }
+                char *dir = strtok(pathdup, ":"); // Split PATH into directories
+                int found = 0;
 
-            if (!found) {
-                printf("%s: not found\n", command);
-            }
+                while (dir != NULL) {
+                    // Construct the full path to the command
+                    char full_path[MAX_PATH];
+                    snprintf(full_path, sizeof(full_path), "%s/%s", dir, command);
 
-            free(pathdup); // Free the duplicated path string
+                    // Check if the file exists and is executable
+                    if (access(full_path, X_OK) == 0) {
+                        printf("%s is %s\n", command, full_path);
+                        found = 1;
+                        break; // Exit the loop after the first match
+                    }
+
+                    dir = strtok(NULL, ":"); // Move to the next directory in PATH
+                }
+
+                if (!found) {
+                    printf("%s: not found\n", command);
+                }
+
+                free(pathdup); // Free the duplicated path string
+            }
+        // Execute unrecognized commands
+        } else {
+            execute_external_command(input);
         }
-    // Execute unrecognized commands
-    } else {
-        execute_external_command(input);
     }
-  }
-  return 0;
+    return 0;
 }
