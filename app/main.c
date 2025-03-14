@@ -8,49 +8,66 @@
 #define MAX_INPUT 100
 #define MAX_PATH 1024
 
-void process_input(char *input) {
+char** process_input(char *input) {
     int len = strlen(input);
     char temp[MAX_INPUT];
+    char token[MAX_INPUT];
+    char **args = malloc(MAX_INPUT * sizeof(char*));
+    int arg_count = 0;
     int j = 0;
+    int k = 0;
+    int is_token = 1;
     int inside_single_quote = 0;
     int inside_double_quote = 0;
 
     for (int i = 0; i < len; i++) {
         if (input[i] == '\'') {
             inside_single_quote = !inside_single_quote;
+            if (inside_single_quote) {
+                is_token = 1;
+            } else {
+                is_token = 0;
+            }
         } else if (isspace(input[i]) && !inside_single_quote) {
             temp[j++] = input[i];
+            is_token = 0;
 
             while (isspace(input[i])) {
                 i++;
             }
             i--;
         } else {
+            is_token = 1;
             temp[j++] = input[i];
+        }
+
+        if (is_token) {
+            if (input[i] != '\'') {
+                token[k++] = input[i];
+            }
+        } else {
+            token[k] = '\0';
+            args[arg_count] = strdup(token);
+            arg_count++;
+            k = 0;
         }
     }
 
+    if (is_token) {
+        token[j] = '\0';  // End the last token
+        args[arg_count] = strdup(token);  // Save the last token
+        arg_count++;
+    }
+
+    args[arg_count] = NULL;
     temp[j] = '\0';
 
     strcpy(input, temp);
+
+    return args;
 }
 
-void execute_external_command(char *input) {
-    // Tokenize the input into command and arguments
-    char *args[MAX_INPUT];
-    char *token = strtok(input, " ");
-    int arg_count = 0;
-
-    while (token != NULL && arg_count < MAX_INPUT - 1) {
-        args[arg_count++] = token;
-        token = strtok(NULL, " ");
-    }
-    args[arg_count] = NULL; // Null-terminate the argument list
-
-    if (arg_count == 0) {
-        return; // No command entered
-    }
-
+void execute_external_command(char **args) {
     pid_t pid = fork();
 
     if (pid < 0) {
@@ -83,14 +100,14 @@ int main() {
         // Wait for user input
         char input[MAX_INPUT];
         if (fgets(input, MAX_INPUT, stdin) == NULL) {
-            // Handle end-of-file (Ctrl+D)
+            // Handle end-of-file
             printf("\n");
             break;
         }
         // Set newline to null terminator
         input[strlen(input) - 1] = '\0';
 
-        process_input(input);
+        char **args = process_input(input);
 
         // Handle exit command
         if (strncmp(input, "exit 0", 6) == 0) {
@@ -161,7 +178,7 @@ int main() {
             }
         // Execute unrecognized commands
         } else {
-            execute_external_command(input);
+            execute_external_command(args);
         }
     }
     return 0;
