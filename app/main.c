@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <ctype.h>
 #include <sys/wait.h>
 
 #define MAX_INPUT 100
@@ -15,11 +16,16 @@ void process_input(char *input) {
     int inside_double_quote = 0;
 
     for (int i = 0; i < len; i++) {
-        if (input[i] == '\'' && !inside_single_quote) {
-            inside_single_quote = 1;
-        } else if (input[i] == '\'' && inside_single_quote) {
-            inside_single_quote = 0;
-        }  else {
+        if (input[i] == '\'') {
+            inside_single_quote = !inside_single_quote;
+        } else if (isspace(input[i]) && !inside_single_quote) {
+            temp[j++] = input[i];
+
+            while (isspace(input[i])) {
+                i++;
+            }
+            i--;
+        } else {
             temp[j++] = input[i];
         }
     }
