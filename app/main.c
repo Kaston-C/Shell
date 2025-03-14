@@ -27,7 +27,13 @@ char** process_input(char *input) {
                 is_token = 1;
             } else {
                 is_token = 0;
+                if (i == len - 1) {
+                    token[k] = '\0';  // End the last token
+                    args[arg_count] = strdup(token);  // Save the last token
+                    arg_count++;
+                }
             }
+            continue;
         } else if (isspace(input[i]) && !inside_single_quote) {
             temp[j++] = input[i];
             is_token = 0;
@@ -42,9 +48,7 @@ char** process_input(char *input) {
         }
 
         if (is_token) {
-            if (input[i] != '\'') {
-                token[k++] = input[i];
-            }
+            token[k++] = input[i];
         } else {
             token[k] = '\0';
             args[arg_count] = strdup(token);
@@ -54,7 +58,7 @@ char** process_input(char *input) {
     }
 
     if (is_token) {
-        token[j] = '\0';  // End the last token
+        token[k] = '\0';  // End the last token
         args[arg_count] = strdup(token);  // Save the last token
         arg_count++;
     }
@@ -111,6 +115,10 @@ int main() {
 
         // Handle exit command
         if (strncmp(input, "exit 0", 6) == 0) {
+            for (int i = 0; args[i] != NULL; i++) {
+                free(args[i]);
+            }
+            free(args);
             exit(0);
         // Handle echo command
         } else if (strncmp(input, "echo ", 5) == 0) {
@@ -180,6 +188,11 @@ int main() {
         } else {
             execute_external_command(args);
         }
+
+        for (int i = 0; args[i] != NULL; i++) {
+            free(args[i]);
+        }
+        free(args);
     }
     return 0;
 }
