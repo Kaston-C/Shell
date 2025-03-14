@@ -16,23 +16,11 @@ void process_input(char *input) {
 
     for (int i = 0; i < len; i++) {
         if (input[i] == '\'' && !inside_double_quote) {
-            // Toggle single quote block
-            inside_single_quote = !inside_single_quote;
-        } else if (input[i] == '"' && !inside_single_quote) {
-            // Toggle double quote block
-            inside_double_quote = !inside_double_quote;
-        } else if (input[i] == '\\' && inside_double_quote) {
-            // Handle escape sequences inside double quotes
-            if (i + 1 < len && (input[i + 1] == '$' || input[i + 1] == '`' || input[i + 1] == '"' || input[i + 1] == '\\' || input[i + 1] == '\n')) {
-                temp[j++] = input[++i]; // Skip backslash and copy next character
-            } else {
-                temp[j++] = input[i]; // Copy the backslash as-is
-            }
+            inside_single_quote = 1;
+        } else if (input[i] == '\'' && inside_double_quote) {
+            inside_single_quote = 0;
         } else {
-            // Preserve characters inside quotes or non-space characters outside
-            if (inside_single_quote || inside_double_quote || input[i] != ' ' || (i == 0 || input[i - 1] != ' ')) {
-                temp[j++] = input[i];
-            }
+            temp[j++] = input[i];
         }
     }
 
