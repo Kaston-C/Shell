@@ -15,18 +15,17 @@ void process_input(char *input) {
     int inside_double_quote = 0;
 
     for (int i = 0; i < len; i++) {
-        if (input[i] == '\'' && !inside_double_quote) {
+        if (input[i] == '\'' && !inside_single_quote) {
             inside_single_quote = 1;
-        } else if (input[i] == '\'' && inside_double_quote) {
+        } else if (input[i] == '\'' && inside_single_quote) {
             inside_single_quote = 0;
-        } else {
+        }  else {
             temp[j++] = input[i];
         }
     }
 
     temp[j] = '\0';
 
-    // Copy the processed input back
     strcpy(input, temp);
 }
 
