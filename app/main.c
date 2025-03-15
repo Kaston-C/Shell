@@ -35,7 +35,7 @@ char** process_input(char *input) {
 
             while (input[i] != '"' && input[i] != '\0') {
                 if (input[i] == '\\') {
-                    if (input[i + 1] == '\\' || input[i + 1] == '$' || input[i + 1] == '`' || input[i + 1] == '\n') {
+                    if (input[i + 1] == '\\' || input[i + 1] == '$' || input[i + 1] == '"' || input[i + 1] == '\n') {
                         i++;
                     }
                 }
