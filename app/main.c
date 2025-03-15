@@ -34,6 +34,11 @@ char** process_input(char *input) {
             i++;
 
             while (input[i] != '"' && input[i] != '\0') {
+                if (input[i] == '\\') {
+                    if (input[i + 1] == '\\' || input[i + 1] == '$' || input[i + 1] == '`' || input[i + 1] == '\n') {
+                        i++;
+                    }
+                }
                 temp[j++] = input[i];
                 token[k++] = input[i++];
             }
