@@ -16,51 +16,49 @@ char** process_input(char *input) {
     int arg_count = 0;
     int j = 0;
     int k = 0;
-    int is_token = 1;
-    int inside_single_quote = 0;
-    int inside_double_quote = 0;
 
     for (int i = 0; i < len; i++) {
         if (input[i] == '\'') {
-            inside_single_quote = !inside_single_quote;
-            if (inside_single_quote) {
-                is_token = 1;
-            } else {
-                is_token = 0;
-                if (i == len - 1) {
-                    token[k] = '\0';  // End the last token
-                    args[arg_count] = strdup(token);  // Save the last token
-                    arg_count++;
-                }
+            i++;
+
+            while (input[i] != '\'' && input[i] != '\0') {
+              temp[j++] = input[i];
+              token[k++] = input[i++];
             }
-            continue;
-        } else if (isspace(input[i]) && !inside_single_quote) {
+
+            token[k] = '\0';
+            args[arg_count] = strdup(token);
+            arg_count++;
+            k = 0;
+        } else if (input[i] == '"') {
+            i++;
+
+            while (input[i] != '"' && input[i] != '\0') {
+                temp[j++] = input[i];
+                token[k++] = input[i++];
+            }
+
+            token[k] = '\0';
+            args[arg_count] = strdup(token);
+            arg_count++;
+            k = 0;
+        } else if (isspace(input[i])) {
             temp[j++] = input[i];
-            is_token = 0;
 
             while (isspace(input[i])) {
                 i++;
             }
             i--;
         } else {
-            is_token = 1;
-            temp[j++] = input[i];
-        }
-
-        if (is_token) {
-            token[k++] = input[i];
-        } else {
+            while (input[i] != '\0' && !isspace(input[i]) && input[i] != '\'' && input[i] != '"') {
+                temp[j++] = input[i];
+                token[k++] = input[i++];
+            }
             token[k] = '\0';
-            args[arg_count] = strdup(token);
-            arg_count++;
+            args[arg_count++] = strdup(token);
             k = 0;
+            i--;
         }
-    }
-
-    if (is_token) {
-        token[k] = '\0';  // End the last token
-        args[arg_count] = strdup(token);  // Save the last token
-        arg_count++;
     }
 
     args[arg_count] = NULL;
