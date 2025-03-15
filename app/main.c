@@ -51,6 +51,9 @@ char** process_input(char *input) {
             i--;
         } else {
             while (input[i] != '\0' && !isspace(input[i]) && input[i] != '\'' && input[i] != '"') {
+                if (input[i] == '\\') {
+                    i++;
+                }
                 temp[j++] = input[i];
                 token[k++] = input[i++];
             }
