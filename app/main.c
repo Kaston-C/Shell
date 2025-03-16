@@ -41,6 +41,10 @@ int main() {
                 write_to_file(input, args[i + 1], args);
                 to_file = 1;
                 break;
+            } else if ((!strcmp(args[i], "2>")) && args[i + 1] != NULL) {
+                write_to_file(input, args[i + 1], args);
+                to_file = 1;
+                break;
             }
         }
 
@@ -216,14 +220,22 @@ void write_to_file(char *input, char *file_name, char **args) {
 
             char *redirect_pos = strstr(input + 5, ">");
             *redirect_pos = '\0';
+            int redirect_type = 1;
             if (*(redirect_pos - 1) == '1') {
                 *(redirect_pos - 1) = '\0';
+            } else if (*(redirect_pos - 1) == '2') {
+                *(redirect_pos - 1) = '\0';
+                redirect_type = 2;
             }
 
             if (file == NULL) {
                 perror("Error opening file");
             } else {
-                fprintf(file, "%s\n", input + 5);
+                if (redirect_type == 2) {
+                    fprintf(stderr, "%s\n", input + 5);
+                } else {
+                    fprintf(file, "%s\n", input + 5);
+                }
             }
 
             fclose(file);
@@ -343,29 +355,31 @@ void execute_external_command_write_to_file(char **args, char *file_name) {
             exit(EXIT_FAILURE);
         }
 
-        dup2(fd, STDOUT_FILENO);
-        dup2(fd, STDERR_FILENO);
-        close(fd);
-
+        int redirect_type;
         int i;
         for (i = 0; args[i] != NULL; i++) {
             if (!strcmp(args[i], "1>") || !strcmp(args[i], ">")) {
+                dup2(fd, STDOUT_FILENO);
+                break;
+            } else if (!strcmp(args[i], "2>")) {
+                dup2(fd, STDERR_FILENO);
                 break;
             }
         }
 
-        char *cmd_args[i + 1];
+        close(fd);
+
+        char *cmd_args[i + 1];  // +1 for NULL termination
         for (int j = 0; j < i; j++) {
             cmd_args[j] = args[j];
         }
         cmd_args[i] = NULL;
 
         // Child process: execute the command
-        execvp(args[0], args);
+        execvp(cmd_args[0], cmd_args);
 
         // If execvp returns, an error occurred
-        fprintf(stderr, "Error executing command '%s': ", cmd_args[0]);
-        perror("");
+        fprintf(stderr, "%s: command not found\n", cmd_args[0]);
         exit(EXIT_FAILURE);
     } else {
         // Parent process: wait for the child to complete
