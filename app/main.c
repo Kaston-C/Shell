@@ -344,20 +344,28 @@ void execute_external_command_write_to_file(char **args, char *file_name) {
         }
 
         dup2(fd, STDOUT_FILENO);
+        dup2(fd, STDERR_FILENO);
         close(fd);
 
-        for (int i = 0; args[i] != NULL; i++) {
+        int i;
+        for (i = 0; args[i] != NULL; i++) {
             if (!strcmp(args[i], "1>") || !strcmp(args[i], ">")) {
-                args[i] = NULL;
                 break;
             }
         }
+
+        char *cmd_args[i + 1];
+        for (int j = 0; j < i; j++) {
+            cmd_args[j] = args[j];
+        }
+        cmd_args[i] = NULL;
 
         // Child process: execute the command
         execvp(args[0], args);
 
         // If execvp returns, an error occurred
-        fprintf(stderr, "%s: command not found\n", args[0]);
+        fprintf(stderr, "Error executing command '%s': ", cmd_args[0]);
+        perror("");
         exit(EXIT_FAILURE);
     } else {
         // Parent process: wait for the child to complete
