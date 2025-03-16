@@ -39,15 +39,11 @@ int main() {
 
         int to_file = 0;
         for (int i = 0; args[i] != NULL; i++) {
-            if ((!strcmp(args[i], "1>") || !strcmp(args[i], ">")) && args[i + 1] != NULL) {
+            if ((!strcmp(args[i], "1>") || !strcmp(args[i], ">") || (!strcmp(args[i], "2>"))) && args[i + 1] != NULL) {
                 write_to_file(input, args[i + 1], args);
                 to_file = 1;
                 break;
-            } else if ((!strcmp(args[i], "2>")) && args[i + 1] != NULL) {
-                write_to_file(input, args[i + 1], args);
-                to_file = 1;
-                break;
-            } else if ((!strcmp(args[i], "1>>") || !strcmp(args[i], ">>")) && args[i + 1] != NULL) {
+            } else if ((!strcmp(args[i], "1>>") || !strcmp(args[i], ">>") || (!strcmp(args[i], "2>>"))) && args[i + 1] != NULL) {
                 append_to_file(input, args[i + 1], args);
                 to_file = 1;
                 break;
@@ -473,7 +469,6 @@ void execute_external_command_write_to_file(char **args, char *file_name) {
             exit(EXIT_FAILURE);
         }
 
-        int redirect_type;
         int i;
         for (i = 0; args[i] != NULL; i++) {
             if (!strcmp(args[i], "1>") || !strcmp(args[i], ">")) {
@@ -521,7 +516,6 @@ void execute_external_command_append_to_file(char **args, char *file_name) {
             exit(EXIT_FAILURE);
         }
 
-        int redirect_type;
         int i;
         for (i = 0; args[i] != NULL; i++) {
             if (!strcmp(args[i], "1>>") || !strcmp(args[i], ">>")) {
