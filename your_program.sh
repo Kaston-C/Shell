@@ -14,7 +14,9 @@ set -e # Exit early if any commands fail
 # - Edit .codecrafters/compile.sh to change how your program compiles remotely
 (
   cd "$(dirname "$0")" # Ensure compile steps are run within the repository directory
-  gcc app/*.c -o /tmp/shell-target
+  gcc -o /tmp/shell-target app/*.c \
+      -I/opt/homebrew/Cellar/readline/8.2.13/include \
+      -L/opt/homebrew/Cellar/readline/8.2.13/lib -lreadline
 )
 
 # Copied from .codecrafters/run.sh

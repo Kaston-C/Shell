@@ -9,4 +9,6 @@
 # Exit early if any commands fail
 set -e
 
-gcc app/*.c -o /tmp/shell-target
+gcc -o /tmp/shell-target app/*.c \
+      -I/opt/homebrew/Cellar/readline/8.2.13/include \
+      -L/opt/homebrew/Cellar/readline/8.2.13/lib -lreadline

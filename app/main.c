@@ -5,6 +5,9 @@
 #include <ctype.h>
 #include <sys/wait.h>
 #include <fcntl.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+#include <dirent.h>
 
 #define MAX_INPUT 100
 #define MAX_PATH 1024
@@ -16,24 +19,27 @@ void append_to_file(char *input, char *file_name, char **args);
 void execute_external_command(char **args);
 void execute_external_command_write_to_file(char **args, char *file_name);
 void execute_external_command_append_to_file(char **args, char *file_name);
+char *command_generator(const char *text, int state);
+char **completion(const char *text, int start, int end);
+
+const char *commands[] = {"ls", "cd", "echo", "cat", "mkdir", "rm", "touch", "exit", NULL};
 
 int main() {
+    rl_attempted_completion_function = completion;
+
     // REPL loop
     while (1) {
-        // Flush after every printf
         setbuf(stdout, NULL);
+        char *input = readline("$ ");
 
-        printf("$ ");
-
-        // Wait for user input
-        char input[MAX_INPUT];
-        if (fgets(input, MAX_INPUT, stdin) == NULL) {
-            // Handle end-of-file
+        if (!input) {  // Handle EOF
             printf("\n");
             break;
         }
-        // Set newline to null terminator
-        input[strlen(input) - 1] = '\0';
+
+        if (*input) {
+            add_history(input);
+        }
 
         char **args = process_input(input);
 
@@ -133,7 +139,7 @@ char** process_input(char *input) {
 
 void write_out(char *input, char **args) {
     // Handle exit command
-        if (strncmp(input, "exit 0", 6) == 0) {
+        if (strncmp(input, "exit", 6) == 0) {
             for (int i = 0; args[i] != NULL; i++) {
                 free(args[i]);
             }
@@ -210,7 +216,7 @@ void write_out(char *input, char **args) {
 }
 
 void write_to_file(char *input, char *file_name, char **args) {
-    if (strncmp(input, "exit 0", 6) == 0) {
+    if (strncmp(input, "exit", 6) == 0) {
             for (int i = 0; args[i] != NULL; i++) {
                 free(args[i]);
             }
@@ -322,7 +328,7 @@ void write_to_file(char *input, char *file_name, char **args) {
     }
 
 void append_to_file(char *input, char *file_name, char **args) {
-    if (strncmp(input, "exit 0", 6) == 0) {
+    if (strncmp(input, "exit", 6) == 0) {
             for (int i = 0; args[i] != NULL; i++) {
                 free(args[i]);
             }
@@ -546,4 +552,39 @@ void execute_external_command_append_to_file(char **args, char *file_name) {
         int status;
         waitpid(pid, &status, 0);
     }
+}
+
+char *command_generator(const char *text, int state) {
+    static int index, len;
+    const char *name;
+
+    if (!state) {
+        index = 0;
+        len = strlen(text);
+    }
+
+    while ((name = commands[index++])) {
+        if (strncmp(name, text, len) == 0) {
+            return strdup(name);
+        }
+    }
+
+    return NULL;
+}
+
+char *path_generator(const char *text, int state) {
+    // This can utilize file and directory completion from readline
+    return rl_filename_completion_function(text, state);
+}
+
+char **completion(const char *text, int start, int end) {
+    rl_completion_suppress_append = 1;
+    // If we are completing the command (start == 0), use the command generator
+    if (start == 0) {
+        rl_attempted_completion_over = 1;
+        return rl_completion_matches(text, command_generator);
+    }
+
+    // Otherwise, assume we're completing a path (file argument)
+    return rl_completion_matches(text, path_generator);
 }
