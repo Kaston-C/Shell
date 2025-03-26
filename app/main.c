@@ -30,7 +30,20 @@ int main() {
     // REPL loop
     while (1) {
         setbuf(stdout, NULL);
-        char *input = readline("$ ");
+
+        char temp[1024];
+        char *lastFolder;
+        char *input;
+        if (getcwd(temp, sizeof(temp)) != NULL) {
+            // Find the last occurrence of '/'
+            lastFolder = strrchr(temp, '/');
+            sprintf(temp, "%s $ ", lastFolder + 1);  // +1 to skip the '/'
+
+            // Read input using the custom prompt
+            input = readline(temp);
+        } else {
+            input  = readline("$");
+        }
 
         if (!input) {  // Handle EOF
             printf("\n");
