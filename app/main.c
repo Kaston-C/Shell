@@ -9,7 +9,7 @@
 #include <readline/history.h>
 #include <dirent.h>
 
-#define MAX_INPUT 100
+#define MY_SHELL_MAX_INPUT 100
 #define MAX_PATH 1024
 
 char** process_input(char *input);
@@ -83,9 +83,9 @@ int main() {
 
 char** process_input(char *input) {
     int len = strlen(input);
-    char temp[MAX_INPUT];
-    char token[MAX_INPUT];
-    char **args = malloc(MAX_INPUT * sizeof(char*));
+    char temp[MY_SHELL_MAX_INPUT];
+    char token[MY_SHELL_MAX_INPUT];
+    char **args = malloc(MY_SHELL_MAX_INPUT * sizeof(char*));
     int arg_count = 0;
     int j = 0;
     int k = 0;

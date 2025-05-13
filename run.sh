@@ -8,19 +8,24 @@
 
 set -e # Exit early if any commands fail
 
-# Copied from .codecrafters/compile.sh
-#
-# - Edit this to change how your program compiles locally
-# - Edit .codecrafters/compile.sh to change how your program compiles remotely
-(
-  cd "$(dirname "$0")" # Ensure compile steps are run within the repository directory
-  gcc -o /tmp/shell-target app/*.c \
-      -I/opt/homebrew/Cellar/readline/8.2.13/include \
-      -L/opt/homebrew/Cellar/readline/8.2.13/lib -lreadline
-)
+# Ensure compile steps are run within the repository directory
+cd "$(dirname "$0")"
 
-# Copied from .codecrafters/run.sh
-#
-# - Edit this to change how your program runs locally
-# - Edit .codecrafters/run.sh to change how your program runs remotely
+# Check for macOS architecture (Silicon or Intel)
+if [ "$(uname -m)" = "arm64" ]; then
+  # For Apple Silicon Macs
+  READLINE_INCLUDE_PATH="/opt/homebrew/Cellar/readline/8.2.13/include"
+  READLINE_LIB_PATH="/opt/homebrew/Cellar/readline/8.2.13/lib"
+else
+  # For Intel Macs or other systems (e.g., Linux)
+  READLINE_INCLUDE_PATH="/usr/local/include"
+  READLINE_LIB_PATH="/usr/local/lib"
+fi
+
+# Compile the program with appropriate paths for readline
+gcc -o /tmp/shell-target app/*.c \
+    -I$READLINE_INCLUDE_PATH \
+    -L$READLINE_LIB_PATH -lreadline
+
+# Run the compiled program
 exec /tmp/shell-target "$@"
