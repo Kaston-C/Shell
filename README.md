@@ -1,10 +1,10 @@
-# Custom Unix Shell 🐚
+# 🐚 Custom Unix Shell
 
 A lightweight, Unix-like command-line shell built in C as part of the [CodeCrafters](https://www.codecrafters.io/) Unix Shell challenge. This shell provides a seamless and user-friendly command-line experience, featuring built-in commands, robust input parsing, file redirection, history management, and autocompletion.
 
-## Features 🌟
+## 🌟 Features
 
-* **Built-in Commands** 💻
+* 💻 **Built-in Commands**
 
   Supports common shell commands, including:
 
@@ -13,11 +13,11 @@ A lightweight, Unix-like command-line shell built in C as part of the [CodeCraft
   * `exit` (Quit the shell)
   * and more!
 
-* **External Command Execution** 🏃‍♂️
+* 🏃‍♂️ **External Command Execution**
 
   Executes standard Unix commands by forking and managing child processes.
 
-* **Input Parsing** 🔍
+* 🔍 **Input Parsing**
 
   Smart handling of:
 
@@ -26,23 +26,23 @@ A lightweight, Unix-like command-line shell built in C as part of the [CodeCraft
   * Arbitrary whitespace
   * Edge cases in user input (no command left behind!)
 
-* **File Redirection** 📂
+* 📂 **File Redirection**
 
   Supports input (`<`), output (`>`), and append (`>>`) redirection.
 
-* **Command History** ⏳
+* ⏳ **Command History**
 
   Tracks your executed commands and allows you to easily recall and reuse them. No more typing the same thing twice!
 
-* **Autocompletion** ⌨️
+* ⌨️ **Autocompletion**
 
   Tab-based autocompletion for commands, file paths, and more for an enhanced user experience.
 
-## About 👨‍💻
+## 👨‍💻 About
 
-This project was built as part of the [CodeCrafters](https://www.codecrafters.io/) Unix Shell challenge. The goal? To implement a shell from scratch in C and dive deep into system-level programming. While certain parts could be optimized using existing libraries, I decided to implement them myself for the maximum learning experience. 💡
+This project was built as part of the [CodeCrafters](https://www.codecrafters.io/) Unix Shell challenge. The goal? To implement a shell from scratch in C and dive deep into system-level programming. While certain parts could be optimized using existing libraries, I decided to implement them myself for the maximum learning experience.
 
-## Installation ⚙️
+## ⚙️ Installation
 
 1. Install dependencies (make sure you have `gcc` or another C compiler installed):
 
@@ -63,7 +63,7 @@ This project was built as part of the [CodeCrafters](https://www.codecrafters.io
    ./run.sh
    ```
 
-## Usage 🎮
+## 🎮 Usage
 
 Once the shell is running, you can:
 
@@ -72,7 +72,7 @@ Once the shell is running, you can:
 * Recall previous commands with up/down arrows
 * Use Tab for autocompletion of file/command names (no more typos!)
 
-### Example 📝
+### 📝 Example
 
 ```bash
 $ echo "Hello, Shell!"
@@ -85,7 +85,7 @@ $ ls -la > out.txt
 $ cat out.txt
 ```
 
-## Dependencies 📦
+## 📦 Dependencies
 
 * C Standard Library (stdlib.h, stdio.h, string.h, unistd.h, fcntl.h, sys/wait.h, etc.)
 * Readline Library (readline/readline.h and readline/history.h)
@@ -93,6 +93,6 @@ $ cat out.txt
   * Installation steps above
 * POSIX-compliant system (Linux, macOS)
 
-## License 📄
+## 📄 License
 
 [MIT License](LICENSE)
