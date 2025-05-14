@@ -44,14 +44,7 @@ This project was built as part of the [CodeCrafters](https://www.codecrafters.io
 
 ## Installation ⚙️
 
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/Kaston-C/shell.git
-   cd shell
-   ```
-
-2. Install dependencies (make sure you have `gcc` or another C compiler installed):
+1. Install dependencies (make sure you have `gcc` or another C compiler installed):
 
    * **On Debian-based systems (Ubuntu, etc.):**
 
@@ -64,7 +57,7 @@ This project was built as part of the [CodeCrafters](https://www.codecrafters.io
      brew install readline
      ```
 
-3. Run the shell (compiles and starts the shell):
+2. Run the shell (compiles and starts the shell):
 
    ```bash
    ./run.sh
