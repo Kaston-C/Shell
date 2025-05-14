@@ -1,6 +1,6 @@
 # Custom Unix Shell 🐚
 
-A lightweight, Unix-like command-line shell built in C as part of the [CodeCrafters](https://www.codecrafters.io/) Unix Shell challenge. This shell provides a seamless and user-friendly command-line experience, featuring built-in commands, robust input parsing, file redirection, history management, and autocompletion. 🚀
+A lightweight, Unix-like command-line shell built in C as part of the [CodeCrafters](https://www.codecrafters.io/) Unix Shell challenge. This shell provides a seamless and user-friendly command-line experience, featuring built-in commands, robust input parsing, file redirection, history management, and autocompletion.
 
 ## Features 🌟
 
