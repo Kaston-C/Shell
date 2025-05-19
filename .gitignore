@@ -54,9 +54,5 @@ dkms.conf
 build
 vcpkg_installed
 
-codecrafters.yml
-.codecrafters
-vcpkg.json
-vcpkg-configuration.json
 cmake-build-debug
 .idea
